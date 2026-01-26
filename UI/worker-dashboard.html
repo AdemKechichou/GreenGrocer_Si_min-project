@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - GreenGrocer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #8bc34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #8bc34a;
+        }
+
+        .btn-logout {
+            background: #c62828;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header h1 {
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Container */
+        .section-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            color: white;
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .section-header:hover {
+            background: linear-gradient(135deg, #3a6b1d 0%, #5a9238 100%);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-badge {
+            background: #8bc34a;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .section-content.open {
+            max-height: 5000px;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        /* Orders Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #2d5016;
+        }
+
+        tbody tr {
+            transition: background 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-processing {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-delivery {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-delivered {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-canceled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-refunded {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .repeat-icon {
+            color: #8bc34a;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background: #2196f3;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-edit:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 10% auto;
+            border-radius: 12px;
+            padding: 2rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: #2d5016;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #8bc34a;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #8bc34a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #7cb342;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="" class="logo">
+                <div class="logo-icon">🌱</div>
+                GreenGrocer
+            </a>
+            <div class="nav-links">
+                <a href="#" class="btn-logout" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Worker Dashboard</h1>
+            <p>Manage and track delivery orders</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Today's Orders Section -->
+        <div class="section-container">
+            <div class="section-header" onclick="toggleSection('today')">
+                <div class="section-title">
+                    📅 Today's Orders
+                    <span class="section-badge" id="today-count">0</span>
+                </div>
+                <span class="toggle-icon open" id="today-icon">▼</span>
+            </div>
+            <div class="section-content open" id="today-content">
+                <div class="section-body" id="today-body">
+                    <div class="loading">Loading today's orders...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Orders Section -->
+        <div class="section-container">
+            <div class="section-header" onclick="toggleSection('all')">
+                <div class="section-title">
+                    📦 All Orders
+                    <span class="section-badge" id="all-count">-</span>
+                </div>
+                <span class="toggle-icon" id="all-icon">▼</span>
+            </div>
+            <div class="section-content" id="all-content">
+                <div class="section-body" id="all-body">
+                    <div class="loading">Click to load all orders...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Status Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Order Status</h2>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form onsubmit="handleStatusUpdate(event)">
+                <input type="hidden" id="edit-order-id">
+                <div class="form-group">
+                    <label for="order-status">Order Status</label>
+                    <select id="order-status" required>
+                        <option value="Processing">Processing</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Canceled">Canceled</option>
+                        <option value="Refunded">Refunded</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+        let token = localStorage.getItem('token');
+        let todayOrders = [];
+        let allOrders = [];
+        let allOrdersLoaded = false;
+
+        function getAuthHeader() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function toggleSection(section) {
+            const content = document.getElementById(`${section}-content`);
+            const icon = document.getElementById(`${section}-icon`);
+            
+            content.classList.toggle('open');
+            icon.classList.toggle('open');
+
+            // Load all orders when section is opened for the first time
+            if (section === 'all' && content.classList.contains('open') && !allOrdersLoaded) {
+                loadAllOrders();
+            }
+        }
+
+        async function loadTodayOrders() {
+            try {
+                const response = await fetch(`${API_URL}/worker/today_orders`, {
+                    headers: getAuthHeader()
+                });
+
+                if (response.ok) {
+                    todayOrders = await response.json();
+                    displayOrders('today', todayOrders);
+                    document.getElementById('today-count').textContent = todayOrders.length;
+                } else {
+                    displayError('today', 'Failed to load today\'s orders');
+                }
+            } catch (error) {
+                console.error('Error loading today\'s orders:', error);
+                displayError('today', 'Connection error');
+            }
+        }
+
+        async function loadAllOrders() {
+            const bodyEl = document.getElementById('all-body');
+            bodyEl.innerHTML = '<div class="loading">Loading all orders...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/worker/all_orders`, {
+                    headers: getAuthHeader()
+                });
+
+                if (response.ok) {
+                    allOrders = await response.json();
+                    allOrdersLoaded = true;
+                    displayOrders('all', allOrders);
+                    document.getElementById('all-count').textContent = allOrders.length;
+                } else {
+                    displayError('all', 'Failed to load orders');
+                }
+            } catch (error) {
+                console.error('Error loading all orders:', error);
+                displayError('all', 'Connection error');
+            }
+        }
+
+        function displayOrders(section, orders) {
+            const bodyEl = document.getElementById(`${section}-body`);
+
+            if (orders.length === 0) {
+                bodyEl.innerHTML = `
+                    <div class="empty-state">
+                        <p>No orders found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            bodyEl.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Order Time</th>
+                            <th>Delivery Day</th>
+                            <th>Status</th>
+                            <th>Repeat</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(order => `
+                            <tr>
+                                <td><strong>#${order.order_id}</strong></td>
+                                <td>${formatDate(order.order_time)}</td>
+                                <td>${capitalizeFirst(order.day)}</td>
+                                <td>
+                                    <span class="status-badge ${getStatusClass(order.status)}">
+                                        ${order.status}
+                                    </span>
+                                </td>
+                                <td>${order.repeat === 'True' ? '<span class="repeat-icon">🔄 Yes</span>' : 'No'}</td>
+                                <td>
+                                    <button class="btn-edit" onclick="openEditModal('${order.order_id}', '${order.status}')">
+                                        Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function displayError(section, message) {
+            const bodyEl = document.getElementById(`${section}-body`);
+            bodyEl.innerHTML = `
+                <div class="empty-state">
+                    <p style="color: #c62828;">${message}</p>
+                </div>
+            `;
+        }
+
+        function getStatusClass(status) {
+            const lower = status.toLowerCase();
+            if (lower === 'processing') return 'status-processing';
+            if (lower.includes('delivery')) return 'status-delivery';
+            if (lower === 'delivered') return 'status-delivered';
+            if (lower === 'canceled') return 'status-canceled';
+            if (lower === 'refunded') return 'status-refunded';
+            return 'status-processing';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function openEditModal(orderId, currentStatus) {
+            document.getElementById('edit-order-id').value = orderId;
+            document.getElementById('order-status').value = currentStatus;
+            document.getElementById('statusModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('statusModal').style.display = 'none';
+        }
+
+        async function handleStatusUpdate(event) {
+            event.preventDefault();
+
+            const orderId = document.getElementById('edit-order-id').value;
+            const newStatus = document.getElementById('order-status').value;
+
+            try {
+                const response = await fetch(`${API_URL}/worker/update_status?order_id=${orderId}&status=${newStatus}`, {
+                    method: 'PATCH',
+                    headers: getAuthHeader()
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    // Refresh the orders
+                    loadTodayOrders();
+                    if (allOrdersLoaded) {
+                        loadAllOrders();
+                    }
+                    alert('Order status updated successfully');
+                } else {
+                    const data = await response.json();
+                    alert(data.detail || 'Failed to update status');
+                }
+            } catch (error) {
+                alert('Connection error. Please try again.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Check authentication
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 < Date.now()) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                if (payload.user_type !== 'worker') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Load today's orders on page load
+            loadTodayOrders();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('statusModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

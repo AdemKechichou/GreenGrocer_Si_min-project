@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GreenGrocer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(45, 80, 22, 0.9);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #8bc34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #8bc34a;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1.2rem;
+            text-align: center;
+            background: #e0e0e0;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2d5016;
+        }
+
+        .tab:hover {
+            background: #f9f9f9;
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            color: #2d5016;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #8bc34a;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: #8bc34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #7cb342;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 195, 74, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                margin: 1rem;
+            }
+            
+            .form-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">🌱</div>
+                GreenGrocer
+            </a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="store.html">Store</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+     
+    <div class="main-content">
+        <div class="auth-container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('login')">Login</button>
+                <button class="tab" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <div class="form-container">
+                <!-- Login Form -->
+                <div id="login-form" class="form-section active">
+                    <h2>Welcome Back!</h2>
+                    <div id="login-error" class="error-message"></div>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required minlength="8">
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                    <div class="form-footer">
+                        <p>Don't have an account? <a href="#" onclick="switchTab('register'); return false;" style="color: #8bc34a; font-weight: 600;">Register here</a></p>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="form-section">
+                    <h2>Create Account</h2>
+                    <div id="register-error" class="error-message"></div>
+                    <div id="register-success" class="success-message"></div>
+                    <form onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="register-name">Full Name</label>
+                            <input type="text" id="register-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <input type="password" id="register-password" required minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-address">Delivery Address</label>
+                            <textarea id="register-address" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Register</button>
+                    </form>
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="#" onclick="switchTab('login'); return false;" style="color: #8bc34a; font-weight: 600;">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab + '-form').classList.add('active');
+
+            // Clear messages
+            hideMessages();
+        }
+
+        function hideMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function showSuccess(elementId, message) {
+            const successEl = document.getElementById(elementId);
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            hideMessages();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store token
+                    localStorage.setItem('token', data.token);
+                    
+                    // Decode token to get user type (simple base64 decode of JWT payload)
+                    const payload = JSON.parse(atob(data.token.split('.')[1]));
+                    
+                    // Redirect based on user type
+                    if (payload.user_type === 'farmer') {
+                        window.location.href = 'farmer-dashboard.html';
+                    } else if (payload.user_type === 'client') {
+                        window.location.href = 'store.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    showError('login-error', data.detail || 'Login failed. Please check your credentials.');
+                }
+            } catch (error) {
+                showError('login-error', 'Connection error. Please try again.');
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            hideMessages();
+
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const address = document.getElementById('register-address').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        name,
+                        address
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('register-success', 'Account created successfully! Redirecting to login...');
+                    setTimeout(() => {
+                        switchTab('login');
+                    }, 2000);
+                } else {
+                    showError('register-error', data.detail || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                showError('register-error', 'Connection error. Please try again.');
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    // Check if token is not expired
+                    if (payload.exp * 1000 > Date.now()) {
+                        if (payload.user_type === 'farmer') {
+                            window.location.href = 'farmer-dashboard.html';
+                        } else {
+                            window.location.href = 'store.html';
+                        }
+                    }
+                } catch (e) {
+                    // Invalid token, stay on login page
+                }
+            }
+        });
+    </script>
+</body>
+</html>
