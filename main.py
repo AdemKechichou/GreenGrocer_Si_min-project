@@ -6,6 +6,7 @@ origins = [
     "http://localhost:5500",  # Common for VS Code Live Server
     "http://127.0.0.1:5500",
     "http://localhost:3000",  # Common for React/Vue
+    "https://greengrocer-si-min-project-1.onrender.com",
     # Add any other origins you use here
 ]
 app = FastAPI()
