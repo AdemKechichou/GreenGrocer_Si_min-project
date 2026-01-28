@@ -247,7 +247,7 @@ def subtract_from_stock(item_id: int , qty: int):
         cursor.close()
         conn.close()
     
-def items_in_stock()-> list[Item] | any:
+def items_in_stock()-> list[Item]:
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
