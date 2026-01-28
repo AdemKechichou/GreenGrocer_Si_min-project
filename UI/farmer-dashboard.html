@@ -889,10 +889,9 @@
             }
 
             try {
-                const response = await fetch(`${API_URL}/farmer/delete_item`, {
+                const response = await fetch(`${API_URL}/farmer/delete_item?item_id=${itemId}`, {
                     method: 'DELETE',
-                    headers: getAuthHeader(),
-                    body: JSON.stringify({ item_id: itemId })
+                    headers: getAuthHeader()
                 });
 
                 if (response.ok) {
