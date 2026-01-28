@@ -391,12 +391,19 @@
                     const payload = JSON.parse(atob(data.token.split('.')[1]));
                     
                     // Redirect based on user type
-                    if (payload.user_type === 'farmer') {
-                        window.location.href = 'farmer-dashboard.html';
-                    } else if (payload.user_type === 'client') {
-                        window.location.href = 'store.html';
-                    } else {
-                        window.location.href = 'index.html';
+                    switch (payload.user_type){
+                        case 'farmer':
+                             window.location.href = 'farmer-dashboard.html';
+                             break;
+                        case 'client':
+                            window.location.href = 'store.html';
+                            break;
+                        case 'worker':
+                            window.location.href = 'worker-dashboard.html';
+                            break;
+                        case 'admin':
+                            window.location.href = 'admin-panel.html';
+                            break;
                     }
                 } else {
                     showError('login-error', data.detail || 'Login failed. Please check your credentials.');
@@ -451,13 +458,15 @@
                 try {
                     const payload = JSON.parse(atob(token.split('.')[1]));
                     // Check if token is not expired
-                    if (payload.exp * 1000 > Date.now()) {
-                        if (payload.user_type === 'farmer') {
-                            window.location.href = 'farmer-dashboard.html';
-                        } else {
+                    switch (payload.user_type){
+                        case 'farmer':
+                             window.location.href = 'farmer-dashboard.html';
+                        case 'client':
                             window.location.href = 'store.html';
-                        }
+                        case 'worker':
+                            window.location.href = 'worker-dashboard.html';
                     }
+                    
                 } catch (e) {
                     // Invalid token, stay on login page
                 }

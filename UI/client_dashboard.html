@@ -337,12 +337,12 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <a href="index.html" class="logo">
+            <a href="" class="logo">
                 <div class="logo-icon">🌱</div>
                 GreenGrocer
             </a>
             <div class="nav-links">
-                <a href="index.html">Home</a>
+                
                 <a href="store.html">Store</a>
                 <a href="client_dashboard.html">My Orders</a>
                 <a href="#" class="btn-logout" onclick="logout()">Logout</a>
@@ -413,7 +413,7 @@
                 <div class="orders-container">
                     ${orders.map(orderData => {
                         const order = orderData.order;
-                        const items = orderData.itmes; // Note: API has typo "itmes"
+                        const items = orderData.items;
                         
                         const total = items.reduce((sum, item) => sum + (item.qty * item.price), 0);
                         

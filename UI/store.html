@@ -588,14 +588,12 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <a href="index.html" class="logo">
+            <a href="" class="logo">
                 <div class="logo-icon">🌱</div>
                 GreenGrocer
             </a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
                 <li><a href="store.html">Store</a></li>
-                <li><a href="client_dashboard.html">My Orders</a></li>
                 <li id="nav-auth"></li>
                 <li id="nav-cart"></li>
             </ul>
@@ -700,7 +698,7 @@
                         <div class="product-title">${product.title}</div>
                         <div class="product-farmer">From: ${product.farmer_name || 'Local Farmer'}</div>
                         <div class="product-details">
-                            <div class="product-price">$${product.price.toFixed(2)}/kg</div>
+                            <div class="product-price">DZD${product.price.toFixed(2)}/kg</div>
                             <div class="product-stock">${product.qty}kg available</div>
                         </div>
                         <div class="product-actions">
@@ -923,8 +921,9 @@
                         
                         navAuth.innerHTML = `
                             <div class="user-info">
-                                <span>Welcome!</span>
                                 ${payload.user_type === 'farmer' ? '<a href="farmer-dashboard.html">Dashboard</a>' : ''}
+                                ${payload.user_type === 'farmer' ? '<a href="account.html"><img src="img/user.png" width = 32 hight = 32 ></a>': ''}
+                                ${payload.user_type === 'client' ? '<li><a href="client_dashboard.html">My Orders</a></li><a href="account.html"><img src="img/user.png" width = 32 hight = 32 ></a>': ''}
                                 <a href="#" class="btn-logout" onclick="logout()">Logout</a>
                             </div>
                         `;

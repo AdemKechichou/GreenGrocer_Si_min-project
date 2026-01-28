@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 from dotenv import load_dotenv
-from models.user_model import ClientCreation , Item, ItemEdit , ItemOrder , ItemCreate , FarmerProfile ,farmerRegistration
+from models.user_model import ClientCreation , Item, ItemEdit , ItemOrder , ItemCreate ,UserEdit ,farmerRegistration
 from auth import hash_password , create_token
 import datetime
 
@@ -33,6 +33,20 @@ def get_user_by_email(email:str)->dict[str] | None:
             return None
         else:
             user_id , password, type = info
+            return {'user_id':user_id,'email':email,'password':password,'type':type}
+    finally:
+        cursor.close()
+        conn.close()
+def get_user_by_id(user_id:str)->dict[str] | None:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT email ,password, type  from "user" where user_id = %s""",(user_id,))
+        info = cursor.fetchone() # return a tuple or None
+        if info is None:
+            return None
+        else:
+            email , password, type = info
             return {'user_id':user_id,'email':email,'password':password,'type':type}
     finally:
         cursor.close()
@@ -285,6 +299,24 @@ def order_by_client(client_id):
     finally:
         cursor.close()
         conn.close()
+
+def order_by_item(item_id:int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT order_time , day, repeat, order_item.order_id FROM order_item LEFT JOIN "order" ON "order".order_id = order_item.order_id WHERE item_id = %s;""",(item_id,))
+        orders = cursor.fetchall()# return a tuple or None
+        order_list = list()
+        if orders is None:
+            return None
+        else:
+            for order in orders:
+                order_list.append({"status": str(order[0]),"order_time":str(order[1]), "day": str(order[2]), "repeat":str(order[3]) , "order_id":str(order[4])})
+        return order_list
+    finally:
+        cursor.close()
+        conn.close()
+
     
 def order_items(order_id: int):
     conn = get_db_connection()
@@ -300,6 +332,33 @@ def order_items(order_id: int):
             for item in items:
                 item_list.append(Item( profile_id= item[0],title=item[1], qty= item[2], price=item[3],item_id=item[4]))
         return item_list
+    finally:
+        cursor.close()
+        conn.close()
+
+def order_items_by_farmer(profile_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT 
+                            i.title, 
+                            o.day, 
+	                        oi.order_qty
+                        FROM 
+                            "order" AS o
+                        INNER JOIN 
+                            order_item AS oi ON o.order_id = oi.order_id
+                        INNER JOIN 
+                            item_in_stock AS i ON oi.item_id = i.item_id WHERE farmer_id = %s""",(int(profile_id),))
+        orders = cursor.fetchall()# return a tuple or None
+        order_list = list()
+        
+        if orders is None:
+            return None
+        else:
+            for item in orders:
+                order_list.append({"title":str( item[0]),"day":str(item[1]), "qty":str(item[2])})
+        return order_list
     finally:
         cursor.close()
         conn.close()
@@ -330,15 +389,28 @@ def validate_order_ownership(order_id:int ,profile_id: int )->bool:
         cursor.close()
         conn.close()
 
-def edit_farmer(profile: FarmerProfile):
+def edit_user(user: UserEdit , user_id: int ,type : str):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        if profile.name:
-             cursor.execute("""UPDATE farmer_profile SET name = %s WHERE user_id = %s;""",( profile.name, profile.user_id))
-        if profile.address:
-             cursor.execute("""UPDATE farmer_profile SET address = %s WHERE user_id = %s;""",(profile.address , profile.user_id))
-        conn.commit()
+        if type == 'farmer':
+            if user.name:
+             cursor.execute("""UPDATE farmer_profile SET name = %s WHERE user_id = %s;""",( user.name, user_id))
+            if user.address:
+             cursor.execute("""UPDATE farmer_profile SET address = %s WHERE user_id = %s;""",(user.address , user_id))
+            if user.email:
+             cursor.execute("""UPDATE "user" SET email = %s WHERE user_id = %s;""",(user.email , user_id))
+            conn.commit()
+        
+        if type == 'client':
+            if user.name:
+             cursor.execute("""UPDATE client_profile SET name = %s WHERE user_id = %s;""",( user.name, user_id))
+            if user.address:
+             cursor.execute("""UPDATE client_profile SET address = %s WHERE user_id = %s;""",(user.address , user_id))
+            if user.email:
+             cursor.execute("""UPDATE "user" SET email = %s WHERE user_id = %s;""",(user.email , user_id))
+            conn.commit()
+
         return {"message": "edit profile successfully", "status": "ok"}
     finally:
         cursor.close()
@@ -394,3 +466,92 @@ def edit_order_status(order_id: int, status: str):
         cursor.close()
         conn.close()
     
+def account_info(id: int,type : str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        if type == 'client':
+            cursor.execute("""SELECT name , address , email  from client_profile LEFT JOIN "user" ON "user".user_id = client_profile.user_id WHERE "user".user_id = %s""",(id,))
+        else:
+            cursor.execute("""SELECT name , address , email  from farmer_profile LEFT JOIN "user" ON "user".user_id = farmer_profile.user_id WHERE "user".user_id = %s""",(id,))
+        info = cursor.fetchone() # return a tuple or None
+        if info is None:
+            return None
+        else:
+            account = {"name":str(info[0]),"address":str(info[1]), "email": str(info[2])}
+            return account
+    finally:
+        cursor.close()
+        conn.close()
+
+def edit_password(password: str , user_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    password =  hash_password(password)
+    try:
+        cursor.execute("""UPDATE "user" SET password = %s  WHERE user_id = %s""",(password, user_id))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+
+def farmer_revenue(profile_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        
+        cursor.execute("""SELECT 
+                            i.title, 
+                            TO_CHAR(o.order_time, 'YYYY-MM-DD') as time_str,
+	                        oi.order_qty,
+                            i.price
+                        FROM 
+                            "order" AS o
+                        INNER JOIN 
+                            order_item AS oi ON o.order_id = oi.order_id
+                        INNER JOIN 
+                            item_in_stock AS i ON oi.item_id = i.item_id WHERE oi.farmer_id = %s""",(profile_id,))
+        
+        infos = cursor.fetchall() # return a tuple or None
+        items = list()
+        if infos is None:
+            return None
+        else:
+         for info in infos:
+                items.append({"title":str(info[0]),"time":str(info[1]), "qty": str(info[2]) , "price": str(info[3])})
+        return items
+    finally:
+        cursor.close()
+        conn.close()
+
+def admin_revenue():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        
+        cursor.execute("""SELECT 
+                            i.title, 
+                            TO_CHAR(o.order_time, 'YYYY-MM-DD') as time_str,
+	                        oi.order_qty,
+                            i.price
+                        FROM 
+                            "order" AS o
+                        INNER JOIN 
+                            order_item AS oi ON o.order_id = oi.order_id
+                        INNER JOIN 
+                            item_in_stock AS i ON oi.item_id = i.item_id """)
+        
+        infos = cursor.fetchall() # return a tuple or None
+        items = list()
+        if infos is None:
+            return None
+        else:
+         for info in infos:
+                items.append({"title":str(info[0]),"time":str(info[1]), "qty": str(info[2]) , "price": str(info[3])})
+        return items
+    finally:
+        cursor.close()
+        conn.close()

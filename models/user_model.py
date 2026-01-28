@@ -55,3 +55,12 @@ class FarmerProfile(BaseModel):
     user_id: int | None = None
     name: str | None = Field(default=None ,max_length=100) 
     address: str | None = Field(default=None ,max_length=254)
+
+class Password(BaseModel):
+    current: str = Field(min_length=8) 
+    new: str = Field(min_length=8) 
+
+class UserEdit(BaseModel):
+    email: str = Field(max_length=254)
+    name: str = Field(max_length=254)
+    address: str = Field(max_length=254)

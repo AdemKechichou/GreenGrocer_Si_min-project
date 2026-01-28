@@ -1,8 +1,8 @@
 from fastapi import APIRouter ,Depends , HTTPException 
-from models.user_model import Item ,ItemCreate , ItemEdit , FarmerProfile
+from models.user_model import Item ,ItemCreate , ItemEdit
 from auth import require_farmer
-from database import get_farmer_pid , add_to_stock , item_edit , validate_item_ownership , item_delete , get_item_by_farmer
-from database import edit_farmer
+from database import get_farmer_pid , add_to_stock , item_edit , validate_item_ownership , item_delete , get_item_by_farmer ,farmer_revenue
+from database import   order_items_by_farmer , account_info
 
 router = APIRouter()
 
@@ -45,9 +45,19 @@ def items(current_user = Depends(require_farmer))-> list[Item]:
     items_list = get_item_by_farmer(get_farmer_pid(current_user['user_id']))
     return items_list
 
-@router.patch('/edit_profile')
+@router.get('/orders')
 
-def edit_profile(profile : FarmerProfile,current_user = Depends(require_farmer)):
-    profile.user_id = current_user['user_id']
-    response = edit_farmer(profile)
-    return response
+def orders(current_user = Depends(require_farmer)):
+    farmer_pid = get_farmer_pid(current_user['user_id'])
+    items = order_items_by_farmer(farmer_pid)
+    order_item = list()
+    
+    for item in items:
+        order_item.append({"items": item })
+    return order_item
+
+@router.get("/revenue")
+
+def get_revenue(current_user = Depends(require_farmer)):
+    farmer_pid = get_farmer_pid(current_user['user_id'])
+    return farmer_revenue(farmer_pid)

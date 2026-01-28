@@ -34,6 +34,11 @@ def require_client(current_user = Depends(get_current_user)):
     if current_user['user_type'] != 'client':
         raise HTTPException(status_code=403, detail="client access required")
     return current_user
+def require_client_or_farmer(current_user = Depends(get_current_user)):
+    allowed_user = ['client' ,'farmer' ]
+    if  current_user['user_type'] not in allowed_user:
+        raise HTTPException(status_code=403, detail="client or farmer access required")
+    return current_user
 
 def require_worker(current_user = Depends(get_current_user)):
     if current_user['user_type'] != 'worker':

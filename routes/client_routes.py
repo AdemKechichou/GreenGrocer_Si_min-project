@@ -38,7 +38,7 @@ def orders(current_user = Depends(require_client)):
     orders = order_by_client(client_pid)
     orders_item = list()
     for order in orders:
-        orders_item.append({"order": order , "itmes": order_items(order['order_id'])})
+        orders_item.append({"order": order , "items": order_items(order['order_id'])})
     return orders_item
 
 @router.patch('/cancel_order')

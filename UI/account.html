@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - GreenGrocer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #8bc34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #8bc34a;
+        }
+
+        .btn-logout {
+            background: #c62828;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-header h1 {
+            color: #2d5016;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Inventory Section */
+        .inventory-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            color: #2d5016;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #8bc34a;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #8bc34a;
+            color: white;
+        }
+
+        .btn:hover {
+            background: #7cb342;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between; 
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-header h2 {
+            color: #2d5016;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .error-message {
+            color: #c62828;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="" class="logo">
+                <div class="logo-icon">🌱</div>
+                GreenGrocer
+            </a>
+            <div class="nav-links">
+               
+                <a href="store.html">Store</a>
+                <a href="farmer-dashboard.html">Dashboard</a>
+                <a href="#" class="btn-logout" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-header">
+        <div class="container">
+            <h1>My Account</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="inventory-section">
+            <div class="section-header">
+                <h2>Account information</h2>
+            </div>
+            <div id="inventory-container"></div>
+        </div>
+    </div>
+
+    <!-- Edit Information Modal -->
+    <div id="editInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Information</h2>
+                <span class="close" onclick="closeEditInfoModal()">&times;</span>
+            </div>
+            <div id="edit-success" class="success-message"></div>
+            <form id="editInfoForm">
+                <div class="form-group">
+                    <label for="edit-name">Full Name</label>
+                    <input type="text" id="edit-name" name="name" maxlength="254" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">Email</label>
+                    <input type="email" id="edit-email" name="email" maxlength="254" required>
+                    <div id="email-error" class="error-message">Please enter a valid email address</div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-address">Address</label>
+                    <input type="text" id="edit-address" name="address" maxlength="254" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditInfoModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Password Modal -->
+    <div id="updatePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Password</h2>
+                <span class="close" onclick="closePasswordModal()">&times;</span>
+            </div>
+            <div id="password-success" class="success-message"></div>
+            <form id="updatePasswordForm">
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" name="currentPassword" required>
+                    <div id="current-password-error" class="error-message">Current password is required</div>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="newPassword" minlength="8" required>
+                    <div id="new-password-error" class="error-message">Password must be at least 8 characters</div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" minlength="8" required>
+                    <div id="confirm-password-error" class="error-message">Passwords do not match</div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                    <button type="submit" class="btn">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let token = localStorage.getItem('token');
+        let information = {};
+
+        function getAuthHeader() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function loadInformation() {
+            try {
+                const response = await fetch(`${API_URL}/auth/account`, {
+                    headers: getAuthHeader()
+                });
+                
+                information = await response.json();
+                displayInformation(information);
+            } catch (error) {
+                console.error('Error loading information:', error);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 < Date.now()) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                if (payload.user_type !== 'farmer' & payload.user_type !== 'client' ) {
+                    window.location.href = 'store.html';
+                    return;
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadInformation();
+        });
+
+        function displayInformation(information) {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = `
+                <div style="padding: 2rem;" id="full_name">
+                    <span>Full Name</span>
+                    <span><input readonly="true" type="text" value="${information.name}" maxlength="254"></span>
+                </div>
+                <div style="padding: 2rem;" id="address">
+                    <span>Address</span>
+                    <span><input readonly="true" type="text" value="${information.address}" maxlength="254"></span>
+                </div>
+                <div style="padding: 2rem;" id="email">
+                    <span>Email</span>
+                    <span><input readonly="true" type="text" value="${information.email}" maxlength="254"></span>
+                </div>
+                <div style="padding: 2rem;" id="password">
+                    <span>Password</span>
+                    <span><input readonly="true" type="text" value="***********" maxlength="254"></span>
+                </div>
+                <div class="btn-container">
+                    <span><button class="btn" onclick="openEditInfoModal()">Edit Information</button></span>
+                    <span><button class="btn" onclick="openPasswordModal()">Update Password</button></span>
+                </div>
+            `;
+        }
+
+        // Edit Information Modal Functions
+        function openEditInfoModal() {
+            document.getElementById('edit-name').value = information.name;
+            document.getElementById('edit-email').value = information.email;
+            document.getElementById('edit-address').value = information.address;
+            document.getElementById('editInfoModal').style.display = 'block';
+            document.getElementById('edit-success').style.display = 'none';
+        }
+
+        function closeEditInfoModal() {
+            document.getElementById('editInfoModal').style.display = 'none';
+            document.getElementById('editInfoForm').reset();
+        }
+
+        document.getElementById('editInfoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('edit-name').value;
+            const email = document.getElementById('edit-email').value;
+            const address = document.getElementById('edit-address').value;
+
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('email-error').style.display = 'block';
+                return;
+            }
+            document.getElementById('email-error').style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_URL}/auth/update_profile`, {
+                    method: 'PUT',
+                    headers: getAuthHeader(),
+                    body: JSON.stringify({ email, name, address })
+                });
+
+                if (response.ok) {
+                    information = { name, email, address };
+                    displayInformation(information);
+                    
+                    const successMsg = document.getElementById('edit-success');
+                    successMsg.textContent = 'Information updated successfully!';
+                    successMsg.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeEditInfoModal();
+                    }, 1500);
+                } else {
+                    alert('Failed to update information');
+                }
+            } catch (error) {
+                console.error('Error updating information:', error);
+                alert('Error updating information');
+            }
+        });
+
+        // Update Password Modal Functions
+        function openPasswordModal() {
+            document.getElementById('updatePasswordModal').style.display = 'block';
+            document.getElementById('password-success').style.display = 'none';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('updatePasswordModal').style.display = 'none';
+            document.getElementById('updatePasswordForm').reset();
+            document.getElementById('current-password-error').style.display = 'none';
+            document.getElementById('new-password-error').style.display = 'none';
+            document.getElementById('confirm-password-error').style.display = 'none';
+        }
+
+        document.getElementById('updatePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Reset error messages
+            document.getElementById('current-password-error').style.display = 'none';
+            document.getElementById('new-password-error').style.display = 'none';
+            document.getElementById('confirm-password-error').style.display = 'none';
+
+            // Validate current password
+            if (!currentPassword) {
+                document.getElementById('current-password-error').style.display = 'block';
+                return;
+            }
+
+            // Validate new password length
+            if (newPassword.length < 8) {
+                document.getElementById('new-password-error').style.display = 'block';
+                return;
+            }
+
+            // Validate password match
+            if (newPassword !== confirmPassword) {
+                document.getElementById('confirm-password-error').style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/update_password`, {
+                    method: 'PATCH',
+                    headers: getAuthHeader(),
+                    body: JSON.stringify({ 
+                        "current":currentPassword, 
+                        "new":newPassword 
+                    })
+                });
+
+                if (response.ok) {
+                    const successMsg = document.getElementById('password-success');
+                    successMsg.textContent = 'Password updated successfully!';
+                    successMsg.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closePasswordModal();
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    if (error.message === 'Invalid current password') {
+                        document.getElementById('current-password-error').textContent = 'Current password is incorrect';
+                        document.getElementById('current-password-error').style.display = 'block';
+                    } else {
+                        alert('Failed to update password');
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating password:', error);
+                alert('Error updating password');
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('editInfoModal')) {
+                closeEditInfoModal();
+            }
+            if (event.target === document.getElementById('updatePasswordModal')) {
+                closePasswordModal();
+            }
+        }
+    </script>
+</body>
+</html>

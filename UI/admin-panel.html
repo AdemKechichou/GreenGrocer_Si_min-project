@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - GreenGrocer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #8bc34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #8bc34a;
+        }
+
+        .btn-logout {
+            background: #c62828;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header h1 {
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Revenue Section */
+        .revenue-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .revenue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .revenue-header h2 {
+            color: #2d5016;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 0.5rem;
+            background: #f5f5f5;
+            padding: 0.3rem;
+            border-radius: 8px;
+        }
+
+        .period-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .period-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .period-btn.active {
+            background: #8bc34a;
+            color: white;
+        }
+
+        .revenue-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .revenue-card {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .revenue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .revenue-icon {
+            font-size: 2.5rem;
+        }
+
+        .revenue-info {
+            flex: 1;
+        }
+
+        .revenue-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .revenue-value {
+            color: #2d5016;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .revenue-details {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .product-revenue-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .product-revenue-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #8bc34a;
+        }
+
+        .product-revenue-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .product-revenue-stats {
+            display: flex;
+            gap: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .product-revenue-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        /* User Management Section */
+        .user-management {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .user-management h2 {
+            color: #2d5016;
+            margin-bottom: 1.5rem;
+        }
+
+        .create-user-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .create-card {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e3f2fd 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .create-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .create-card-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .create-card h3 {
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .create-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-create {
+            background: #8bc34a;
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-create:hover {
+            background: #7cb342;
+            transform: translateY(-2px);
+        }
+
+        /* Modal - UPDATED TO BE SMALLER */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 5% auto;
+            border-radius: 10px;
+            padding: 1.25rem;
+            animation: slideDown 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0px); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-header h2 {
+            color: #2d5016;
+            font-size: 1.4rem;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .btn-close:hover {
+            background: #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.65rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #8bc34a;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.25rem;
+        }
+
+        .btn {
+            padding: 0.65rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: #8bc34a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #7cb342;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .error-message, .success-message {
+            padding: 0.65rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .create-user-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                max-width: 90%;
+                margin: 15% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="" class="logo">
+                <div class="logo-icon">🌱</div>
+                GreenGrocer
+            </a>
+            <div class="nav-links">
+                <a href="admin-panel.html">Admin Panel</a>
+                <a href="#" class="btn-logout" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Admin Panel</h1>
+            <p>Manage platform revenue and create accounts</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Revenue Section -->
+        <div class="revenue-section">
+            <div class="revenue-header">
+                <h2>Platform Revenue</h2>
+                <div class="period-selector">
+                    <button class="period-btn active" data-period="today" onclick="changePeriod('today')">Today</button>
+                    <button class="period-btn" data-period="week" onclick="changePeriod('week')">This Week</button>
+                    <button class="period-btn" data-period="month" onclick="changePeriod('month')">This Month</button>
+                    <button class="period-btn" data-period="all" onclick="changePeriod('all')">All Time</button>
+                </div>
+            </div>
+            <div class="revenue-cards">
+                <div class="revenue-card">
+                    <div class="revenue-icon">💰</div>
+                    <div class="revenue-info">
+                        <div class="revenue-label">Total Revenue</div>
+                        <div class="revenue-value" id="total-revenue">DZD 0.00</div>
+                    </div>
+                </div>
+                <div class="revenue-card">
+                    <div class="revenue-icon">📦</div>
+                    <div class="revenue-info">
+                        <div class="revenue-label">Total Orders</div>
+                        <div class="revenue-value" id="total-orders">0</div>
+                    </div>
+                </div>
+                <div class="revenue-card">
+                    <div class="revenue-icon">⚖️</div>
+                    <div class="revenue-info">
+                        <div class="revenue-label">Total Quantity</div>
+                        <div class="revenue-value" id="total-quantity">0 kg</div>
+                    </div>
+                </div>
+                <div class="revenue-card">
+                    <div class="revenue-icon">📊</div>
+                    <div class="revenue-info">
+                        <div class="revenue-label">Average Order</div>
+                        <div class="revenue-value" id="avg-order">DZD 0.00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="revenue-details" id="revenue-details">
+                <div style="text-align: center; padding: 2rem; color: #666;">Loading revenue data...</div>
+            </div>
+        </div>
+
+        <!-- User Management Section -->
+        <div class="user-management">
+            <h2>User Management</h2>
+            <div class="create-user-cards">
+                <div class="create-card" onclick="openFarmerModal()">
+                    <div class="create-card-icon">🚜</div>
+                    <h3>Create Farmer Account</h3>
+                    <p>Add a new farmer to the platform</p>
+                    <button class="btn-create">+ Create Farmer</button>
+                </div>
+                <div class="create-card" onclick="openWorkerModal()">
+                    <div class="create-card-icon">👷</div>
+                    <h3>Create Worker Account</h3>
+                    <p>Add a new delivery worker</p>
+                    <button class="btn-create">+ Create Worker</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Farmer Modal -->
+    <div id="farmerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Farmer Account</h2>
+                <button class="btn-close" onclick="closeModal('farmerModal')">&times;</button>
+            </div>
+            <div id="farmer-error" class="error-message"></div>
+            <div id="farmer-success" class="success-message"></div>
+            <form onsubmit="handleCreateFarmer(event)">
+                <div class="form-group">
+                    <label for="farmer-name">Full Name</label>
+                    <input type="text" id="farmer-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="farmer-email">Email</label>
+                    <input type="email" id="farmer-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="farmer-password">Password</label>
+                    <input type="password" id="farmer-password" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label for="farmer-address">Address</label>
+                    <textarea id="farmer-address" rows="2" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('farmerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Worker Modal -->
+    <div id="workerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Worker Account</h2>
+                <button class="btn-close" onclick="closeModal('workerModal')">&times;</button>
+            </div>
+            <div id="worker-error" class="error-message"></div>
+            <div id="worker-success" class="success-message"></div>
+            <form onsubmit="handleCreateWorker(event)">
+                <div class="form-group">
+                    <label for="worker-name">Full Name</label>
+                    <input type="text" id="worker-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="worker-email">Email</label>
+                    <input type="email" id="worker-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="worker-password">Password</label>
+                    <input type="password" id="worker-password" required minlength="8">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('workerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let token = localStorage.getItem('token');
+        let currentPeriod = 'today';
+        let allRevenueData = [];
+
+        function getAuthHeader() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        // Revenue Functions
+        async function loadRevenue() {
+            try {
+                const response = await fetch(`${API_URL}/admin/revenue`, {
+                    headers: getAuthHeader()
+                });
+
+                if (response.ok) {
+                    allRevenueData = await response.json();
+                    displayRevenue();
+                } else {
+                    displayRevenueError('Failed to load revenue data');
+                }
+            } catch (error) {
+                console.error('Error loading revenue:', error);
+                displayRevenueError('Connection error');
+            }
+        }
+
+        function changePeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-period="${period}"]`).classList.add('active');
+            displayRevenue();
+        }
+
+        function filterDataByPeriod(data) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            return data.filter(item => {
+                const itemDate = new Date(item.time);
+                
+                switch(currentPeriod) {
+                    case 'today':
+                        return itemDate >= today;
+                    case 'week':
+                        const weekAgo = new Date(today);
+                        weekAgo.setDate(weekAgo.getDate() - 7);
+                        return itemDate >= weekAgo;
+                    case 'month':
+                        const monthAgo = new Date(today);
+                        monthAgo.setMonth(monthAgo.getMonth() - 1);
+                        return itemDate >= monthAgo;
+                    case 'all':
+                        return true;
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        function displayRevenue() {
+            const filteredData = filterDataByPeriod(allRevenueData);
+            
+            let totalRevenue = 0;
+            let totalOrders = filteredData.length;
+            let totalQuantity = 0;
+            const productStats = {};
+            
+            filteredData.forEach(item => {
+                const revenue = (parseFloat(item.qty) * parseFloat(item.price))*0.05;
+                totalRevenue += revenue;
+                totalQuantity += parseFloat(item.qty);
+                
+                if (!productStats[item.title]) {
+                    productStats[item.title] = { qty: 0, revenue: 0, orders: 0 };
+                }
+                
+                productStats[item.title].qty += parseFloat(item.qty);
+                productStats[item.title].revenue += revenue;
+                productStats[item.title].orders += 1;
+            });
+            
+            const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            
+            document.getElementById('total-revenue').textContent = `DZD ${totalRevenue.toFixed(2)}`;
+            document.getElementById('total-orders').textContent = totalOrders;
+            document.getElementById('total-quantity').textContent = `${totalQuantity.toFixed(0)} kg`;
+            document.getElementById('avg-order').textContent = `DZD ${avgOrder.toFixed(2)}`;
+            
+            const detailsContainer = document.getElementById('revenue-details');
+            
+            if (Object.keys(productStats).length === 0) {
+                detailsContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">No revenue data for this period</div>';
+                return;
+            }
+            
+            const sortedProducts = Object.entries(productStats).sort((a, b) => b[1].revenue - a[1].revenue);
+            
+            detailsContainer.innerHTML = `
+                <h3 style="color: #2d5016; margin-bottom: 1rem;">Revenue by Product</h3>
+                <div class="product-revenue-list">
+                    ${sortedProducts.map(([product, stats]) => `
+                        <div class="product-revenue-item">
+                            <div>
+                                <div class="product-revenue-name">${capitalizeFirst(product)}</div>
+                                <div class="product-revenue-stats">
+                                    <span>${stats.orders} orders</span>
+                                    <span>${stats.qty.toFixed(0)} kg</span>
+                                </div>
+                            </div>
+                            <div class="product-revenue-amount">DZD ${stats.revenue.toFixed(2)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function displayRevenueError(message) {
+            document.getElementById('revenue-details').innerHTML = `<div style="text-align: center; padding: 2rem; color: #c62828;">${message}</div>`;
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Modal Functions
+        function openFarmerModal() {
+            document.getElementById('farmerModal').style.display = 'block';
+            document.querySelector('#farmerModal form').reset();
+            hideMessages('farmer');
+        }
+
+        function openWorkerModal() {
+            document.getElementById('workerModal').style.display = 'block';
+            document.querySelector('#workerModal form').reset();
+            hideMessages('worker');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function hideMessages(type) {
+            document.getElementById(`${type}-error`).style.display = 'none';
+            document.getElementById(`${type}-success`).style.display = 'none';
+        }
+
+        function showError(type, message) {
+            const errorEl = document.getElementById(`${type}-error`);
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function showSuccess(type, message) {
+            const successEl = document.getElementById(`${type}-success`);
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+        }
+
+        async function handleCreateFarmer(event) {
+            event.preventDefault();
+            hideMessages('farmer');
+
+            const name = document.getElementById('farmer-name').value;
+            const email = document.getElementById('farmer-email').value;
+            const password = document.getElementById('farmer-password').value;
+            const address = document.getElementById('farmer-address').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/create_farmer`, {
+                    method: 'POST',
+                    headers: getAuthHeader(),
+                    body: JSON.stringify({ email, password, name, address, type: 'farmer' })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('farmer', 'Farmer account created successfully!');
+                    setTimeout(() => closeModal('farmerModal'), 2000);
+                } else {
+                    showError('farmer', data.detail || 'Failed to create farmer account');
+                }
+            } catch (error) {
+                showError('farmer', 'Connection error. Please try again.');
+            }
+        }
+
+        async function handleCreateWorker(event) {
+            event.preventDefault();
+            hideMessages('worker');
+
+            const name = document.getElementById('worker-name').value;
+            const email = document.getElementById('worker-email').value;
+            const password = document.getElementById('worker-password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/create_worker`, {
+                    method: 'POST',
+                    headers: getAuthHeader(),
+                    body: JSON.stringify({ email, password, name, type: 'worker' })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess('worker', 'Worker account created successfully!');
+                    setTimeout(() => closeModal('workerModal'), 2000);
+                } else {
+                    showError('worker', data.detail || 'Failed to create worker account');
+                }
+            } catch (error) {
+                showError('worker', 'Connection error. Please try again.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // Check authentication
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 < Date.now()) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                if (payload.user_type !== 'admin' && payload.user_type !== 'administrator') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadRevenue();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
