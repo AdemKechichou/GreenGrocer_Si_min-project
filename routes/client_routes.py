@@ -1,7 +1,7 @@
 from fastapi import APIRouter ,Depends , HTTPException ,Response ,Query
 from models.user_model import Item , ItemOrder
 from auth import  require_client
-from database import  check_qty , get_farmer_pid_by_item ,place_order ,get_client_pid , subtract_from_stock ,items_in_stock , order_by_client, order_items , validate_order_ownership, order_cancel
+from database import  check_qty , get_farmer_pid_by_item ,place_order ,get_client_pid , subtract_from_stock ,items_in_stock , order_by_client, order_items , validate_order_ownership, order_cancel , edit_order_status
 
 
 router = APIRouter()
@@ -47,7 +47,7 @@ def cancel_order(order_id: int ,current_user = Depends(require_client)):
     client_pid = get_client_pid(current_user['user_id'])
     if not validate_order_ownership(order_id,client_pid):
         raise HTTPException(status_code=409, detail="This profile doesn't have the authority to modify this order.")
-    response = order_cancel(order_id)
+    response = edit_order_status(order_id , 'Canceled')
     if response is None:
         return {"message": "failed to edit the order", "status": "error"}
     else:

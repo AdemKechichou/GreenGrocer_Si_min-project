@@ -441,7 +441,7 @@
                 if (response.ok) {
                     showSuccess('register-success', 'Account created successfully! Redirecting to login...');
                     setTimeout(() => {
-                        switchTab('login');
+                        window.location.href = "login.html"
                     }, 2000);
                 } else {
                     showError('register-error', data.detail || 'Registration failed. Please try again.');

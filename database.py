@@ -457,6 +457,16 @@ def edit_order_status(order_id: int, status: str):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
+        if status == 'Canceled' or  status == 'Refunded':
+            cursor.execute("""UPDATE item_in_stock s
+                                SET qty = s.qty + oi.total_qty
+                                FROM (
+                               SELECT item_id, SUM(order_qty) AS total_qty
+                                FROM order_item
+                                WHERE order_id = %s
+                                GROUP BY item_id
+                                ) oi
+                                WHERE s.item_id = oi.item_id;""",(order_id,))
         
         cursor.execute("""UPDATE "order" SET status = %s WHERE order_id = %s;""",(status.lower() , order_id,))
         
