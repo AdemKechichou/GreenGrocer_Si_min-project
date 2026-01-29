@@ -468,7 +468,7 @@
                                     <span class="total-label">Total:</span>
                                     <span class="total-amount">${total.toFixed(2)}</span>
                                 </div>
-                                ${order.status === 'Processing' ? `
+                                ${order.status === 'processing' ? `
                                     <div style="padding: 1rem 1.5rem; border-top: 1px solid #e0e0e0; text-align: right;">
                                         <button class="btn-cancel" onclick="cancelOrder('${order.order_id}')">
                                             Cancel Order
