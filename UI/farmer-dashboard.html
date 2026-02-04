@@ -676,7 +676,7 @@
                     <input type="number" id="item-qty" required min="0">
                 </div>
                 <div class="form-group">
-                    <label for="item-price">Price ($/kg)</label>
+                    <label for="item-price">Price (DZD/kg)</label>
                     <input type="number" id="item-price" step="0.01" required min="0">
                 </div>
                 <div class="form-actions">
@@ -688,7 +688,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://greengrocer-si-min-project.onrender.com';
+        const API_URL = 'http://127.0.0.1:8000';
         let token = localStorage.getItem('token');
         let currentItems = [];
         let isEditMode = false;
@@ -738,7 +738,7 @@
                         <tr>
                             <th>Product Name</th>
                             <th>Quantity</th>
-                            <th>Price ($/kg)</th>
+                            <th>Price (DZD/kg)</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -748,7 +748,7 @@
                             <tr>
                                 <td class="item-name">${item.title}</td>
                                 <td>${item.qty} kg</td>
-                                <td>$${item.price.toFixed(2)}</td>
+                                <td>DZD${item.price.toFixed(2)}</td>
                                 <td>
                                     <span class="stock-badge ${getStockClass(item.qty)}">
                                         ${getStockStatus(item.qty)}

@@ -366,7 +366,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://greengrocer-si-min-project.onrender.com';
+        const API_URL = 'http://127.0.0.1:8000';
         let token = localStorage.getItem('token');
 
         function getAuthHeader() {
@@ -457,8 +457,8 @@
                                                 <tr>
                                                     <td class="item-name">${item.title}</td>
                                                     <td>${item.qty} kg</td>
-                                                    <td>$${item.price.toFixed(2)}</td>
-                                                    <td>$${(item.qty * item.price).toFixed(2)}</td>
+                                                    <td>DZD${item.price.toFixed(2)}</td>
+                                                    <td>DZD${(item.qty * item.price).toFixed(2)}</td>
                                                 </tr>
                                             `).join('')}
                                         </tbody>

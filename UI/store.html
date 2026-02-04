@@ -579,7 +579,7 @@
             </div>
             <div class="cart-total">
                 <span>Total:</span>
-                <span id="cart-total">$0.00</span>
+                <span id="cart-total">DZD0.00</span>
             </div>
             <button class="btn-checkout" onclick="placeOrder()" id="checkout-btn">Place Order</button>
         </div>
@@ -633,7 +633,7 @@
 
     <script>
         
-        const API_URL = 'https://greengrocer-si-min-project.onrender.com';
+        const API_URL = 'http://127.0.0.1:8000';
         let allProducts = [];
         let isLoggedIn = false;
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -837,7 +837,7 @@
                             <button class="qty-btn" onclick="updateCartQuantity(${item.item_id}, ${item.qty + 10})">+</button>
                             <span>kg</span>
                         </div>
-                        <div class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+                        <div class="cart-item-price">DZD${(item.price * item.qty).toFixed(2)}</div>
                     </div>
                 </div>
             `).join('');
@@ -845,7 +845,7 @@
 
         function updateCartTotal() {
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('cart-total').textContent = `DZD${total.toFixed(2)}`;
         }
 
         function openCart() {
